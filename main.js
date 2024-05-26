@@ -176,10 +176,84 @@ class Player {
 
 
 
-function showMoves(event) {
-    var pos = event.id.split('_')
+function showMoves(element) {
+    console.log(element.id + " clicked!!")
+    var pos = element.id.split('_')
     var pawn = gameState[pos[0]][pos[1]]
     pawn.identify()
 
+    let i = parseInt(pos[0])
+    let j = parseInt(pos[1])
+
+
+    if (i+1<table_size){
+        if (gameState[i+1][j] == ''){
+            //css
+            document.getElementById(parseInt(i+1)+'_'+parseInt(j)).className = 'green'
+           
+            
+
+        }
+
+        if (j+1<table_size){
+            if (gameState[i+1][j+1] == ''){
+                //css
+                document.getElementById(parseInt(i+1)+'_'+parseInt(j+1)).className = 'green'
+
+            }
+
+        }
+
+        if (j-1>-1){
+            if (gameState[i+1][j-1] == ''){
+                //css
+                document.getElementById(parseInt(i+1)+'_'+parseInt(j-1)).className = 'green'
+            }
+
+        }
+
+    }
+
+    if (i-1>-1){
+        if (gameState[i-1][j] == ''){
+            //css
+            document.getElementById(parseInt(i-1)+'_'+parseInt(j)).className = 'green'
+        }
+
+        if (j+1<table_size){
+            if (gameState[i-1][j+1] == ''){
+                //css
+                document.getElementById(parseInt(i-1)+'_'+parseInt(j+1)).className = 'green'
+            }
+
+        }
+
+        if(j-1>-1){
+            if (gameState[i-1][j-1] == ''){
+                //css
+                document.getElementById(parseInt(i-1)+'_'+parseInt(j-1)).className = 'green'
+            }
+            
+
+        }
+    }
+
+    if (j-1>-1){
+        if(gameState[i][j-1]==''){
+            document.getElementById(parseInt(i)+'_'+parseInt(j-1)).className = 'green'
+
+
+        }
+    }
+
+    if (j+1<table_size){
+        if(gameState[i][j+1]==''){
+            document.getElementById(parseInt(i)+'_'+parseInt(j+1)).className = 'green'
+
+
+        }
+    }
+
+   
 
 }
