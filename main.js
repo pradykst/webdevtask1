@@ -54,6 +54,18 @@ function startgame() {
 
 
 }
+
+function clearMovesColor(){
+    for(var i=0;i<table_size;i++){
+        for(var j=0;j<table_size;j++){
+            if (document.getElementById(parseInt(i)+'_'+parseInt(j)).className == 'green'){
+                document.getElementById(parseInt(i)+'_'+parseInt(j)).className = ''
+
+            }
+            
+        }
+    }
+}
 function createboard(table_size) {
     var board = document.getElementById("gameboard");
     for (var i = 0; i < table_size; i++) {
@@ -79,6 +91,7 @@ class Pawn {
         gameState[pos[0]][pos[1]] = this
         document.getElementById(pos[0] + '_' + pos[1]).innerText = name
         document.getElementById(pos[0] + '_' + pos[1]).onclick = function () {
+            clearMovesColor()
             showMoves(this)
         }
 
@@ -181,62 +194,67 @@ function showMoves(element) {
     var pos = element.id.split('_')
     var pawn = gameState[pos[0]][pos[1]]
     pawn.identify()
+    let isCanon = false
+    if (pawn instanceof Canon){
+        isCanon = true
+    }
 
     let i = parseInt(pos[0])
     let j = parseInt(pos[1])
 
-
-    if (i+1<table_size){
-        if (gameState[i+1][j] == ''){
-            //css
-            document.getElementById(parseInt(i+1)+'_'+parseInt(j)).className = 'green'
-           
+    if (! isCanon){
+        if (i+1<table_size){
+            if (gameState[i+1][j] == ''){
+                //css
+                document.getElementById(parseInt(i+1)+'_'+parseInt(j)).className = 'green'
             
+                
 
-        }
+            }
 
-        if (j+1<table_size){
-            if (gameState[i+1][j+1] == ''){
-                //css
-                document.getElementById(parseInt(i+1)+'_'+parseInt(j+1)).className = 'green'
+            if (j+1<table_size){
+                if (gameState[i+1][j+1] == ''){
+                    //css
+                    document.getElementById(parseInt(i+1)+'_'+parseInt(j+1)).className = 'green'
+
+                }
+
+            }
+
+            if (j-1>-1){
+                if (gameState[i+1][j-1] == ''){
+                    //css
+                    document.getElementById(parseInt(i+1)+'_'+parseInt(j-1)).className = 'green'
+                }
 
             }
 
         }
 
-        if (j-1>-1){
-            if (gameState[i+1][j-1] == ''){
+        if (i-1>-1){
+            if (gameState[i-1][j] == ''){
                 //css
-                document.getElementById(parseInt(i+1)+'_'+parseInt(j-1)).className = 'green'
+                document.getElementById(parseInt(i-1)+'_'+parseInt(j)).className = 'green'
             }
 
-        }
+            if (j+1<table_size){
+                if (gameState[i-1][j+1] == ''){
+                    //css
+                    document.getElementById(parseInt(i-1)+'_'+parseInt(j+1)).className = 'green'
+                }
 
-    }
-
-    if (i-1>-1){
-        if (gameState[i-1][j] == ''){
-            //css
-            document.getElementById(parseInt(i-1)+'_'+parseInt(j)).className = 'green'
-        }
-
-        if (j+1<table_size){
-            if (gameState[i-1][j+1] == ''){
-                //css
-                document.getElementById(parseInt(i-1)+'_'+parseInt(j+1)).className = 'green'
             }
 
-        }
+            if(j-1>-1){
+                if (gameState[i-1][j-1] == ''){
+                    //css
+                    document.getElementById(parseInt(i-1)+'_'+parseInt(j-1)).className = 'green'
+                }
+                
 
-        if(j-1>-1){
-            if (gameState[i-1][j-1] == ''){
-                //css
-                document.getElementById(parseInt(i-1)+'_'+parseInt(j-1)).className = 'green'
             }
-            
-
         }
-    }
+
 
     if (j-1>-1){
         if(gameState[i][j-1]==''){
@@ -253,7 +271,30 @@ function showMoves(element) {
 
         }
     }
+}
+    else{
+        if (j-1>-1){
+            if(gameState[i][j-1]==''){
+                document.getElementById(parseInt(i)+'_'+parseInt(j-1)).className = 'green'
+    
+    
+            }
+        }
+    
+        if (j+1<table_size){
+            if(gameState[i][j+1]==''){
+                document.getElementById(parseInt(i)+'_'+parseInt(j+1)).className = 'green'
+    
+    
+            }
+        }
+
+    }
 
    
 
 }
+
+
+
+
