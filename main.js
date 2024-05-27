@@ -392,6 +392,8 @@ function move(pawn,des_pos){
     pawn.pos = des_pos
     document.getElementById(des_pos[0] + '_' + des_pos[1]).innerText = pawn.name
     document.getElementById(pos[0] + '_' + pos[1]).onclick = null
+    gameState[pos[0]][pos[1]] = ''
+    gameState[des_pos[0]][des_pos[1]] = pawn
     document.getElementById(des_pos[0] + '_' + des_pos[1]).onclick = function () {
         clearMovesColor()
         showMoves(this)
