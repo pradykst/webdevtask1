@@ -267,23 +267,14 @@ class Bullet extends Pawn {
     delayedShow(pos, timeout){
         setTimeout(this.show,timeout,pos)
     }
-    show() {
-
-
-        if (document.getElementById(this.pos[0] + '_' + this.pos[1]).innerText == '') {
-            document.getElementById(this.pos[0] + '_' + this.pos[1]).innerText = 'O'
-
-        }
-        else{
-            let obj = gameState[this.pos[0]][this.pos[1]]
-            console.log('bullet hit  ')
-            obj.identify()
-        }
-
-    }
 
     show(pos) {
 
+        //@TODO:  if bullet is in last box or has hit something
+        //@todo:remove bullet
+        //@todo:change player
+        //@todo:reset timer
+        //@todo:timer started
 
         if (document.getElementById(pos[0] + '_' + pos[1]).innerText == '') {
             document.getElementById(pos[0] + '_' + pos[1]).innerText = 'O'
@@ -293,19 +284,20 @@ class Bullet extends Pawn {
             let obj = gameState[pos[0]][pos[1]]
             console.log('bullet hit  ')
             obj.identify()
+            //@todo:bullet physics
+        
         }
 
+
     }
 
-    hide() {
-        console.log("hiding..")
-        document.getElementById(this.pos[0] + '_' + this.pos[1]).innerText = ''
-    }
 
     hide(pos) {
         console.log("hiding at pos..",pos)
         document.getElementById(pos[0] + '_' + pos[1]).innerText = ''
     }
+
+
 }
 
 
