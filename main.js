@@ -190,24 +190,26 @@ class Canon extends Pawn {
     shoot() {
         if (this.pos[0] == table_size-1) {
             //showbullet
-            this.bullet.show()
+            this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
+            var counter=1
 
             while(this.bullet.pos[0]>0){
-                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 1000)
+                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
                 this.bullet.pos[0] = parseInt(this.bullet.pos[0])-1
-                this.bullet.show()
+                this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
+                counter++
 
             }
             
         }
 
         else{
-            this.bullet.show()
+            this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
             var counter = 1
             while(this.bullet.pos[0]<table_size-1){
-                    this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 1000)
+                    this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
                     this.bullet.pos[0] = parseInt(this.bullet.pos[0])+1
-                    this.bullet.show()
+                    this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
                     counter ++
             }
         }
@@ -261,6 +263,10 @@ class Bullet extends Pawn {
     delayedHide(pos, timeout){
         setTimeout(this.hide,timeout,pos)
     }
+
+    delayedShow(pos, timeout){
+        setTimeout(this.show,timeout,pos)
+    }
     show() {
 
 
@@ -275,6 +281,22 @@ class Bullet extends Pawn {
         }
 
     }
+
+    show(pos) {
+
+
+        if (document.getElementById(pos[0] + '_' + pos[1]).innerText == '') {
+            document.getElementById(pos[0] + '_' + pos[1]).innerText = 'O'
+
+        }
+        else{
+            let obj = gameState[pos[0]][pos[1]]
+            console.log('bullet hit  ')
+            obj.identify()
+        }
+
+    }
+
     hide() {
         console.log("hiding..")
         document.getElementById(this.pos[0] + '_' + this.pos[1]).innerText = ''
