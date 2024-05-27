@@ -8,11 +8,22 @@ for (var i = 0; i < table_size; i++) {
 }
 
 
+
+let currentPlayer = 0
+let currentPawn = null
+let movePos = null
+
+
 function startgame() {
     //alert("game is starting")
+    document.getElementById('startgameButton').setAttribute('hidden','hidden')
 
+    
+    
     //grid of 8*8
+
     createboard(table_size)
+    
 
     //5 pawns with different properties
     const tank1 = new Tank(1, [1, 6])
@@ -29,6 +40,14 @@ function startgame() {
     const semiricochets2 = new Semiricochets(2, [7, 0])
 
 
+    //player 1 plays first
+
+
+
+
+
+
+
 
 
 
@@ -38,6 +57,9 @@ function startgame() {
 
     //spawn at different locations on both sides, except canon only on extreme rows
     //randomise player 1 and 2 to start playing
+
+
+
     //start timer for player
     //wait until clicked
     //show possible movements for the clicked pawn
@@ -51,6 +73,22 @@ function startgame() {
     //extras
     //modes
     //settings page
+
+
+}
+
+
+
+function playGame(){
+    //currentPlayer clicks on a pawn=currentPawn
+    //currentPlayer clicks on a green cell=movePos 
+    //currentPos=movePos
+    //shoot bullet from canon
+    //reflect and check if hit titan
+    //hit=currentPlayer wins else
+    //switch currentPlayer
+    //repeat
+    
 
 
 }
@@ -91,6 +129,7 @@ class Pawn {
         gameState[pos[0]][pos[1]] = this
         document.getElementById(pos[0] + '_' + pos[1]).innerText = name
         document.getElementById(pos[0] + '_' + pos[1]).onclick = function () {
+            //@todo: make only currentPlayers pawn clickable
             clearMovesColor()
             showMoves(this)
         }
@@ -207,6 +246,11 @@ function showMoves(element) {
             if (gameState[i+1][j] == ''){
                 //css
                 document.getElementById(parseInt(i+1)+'_'+parseInt(j)).className = 'green'
+                document.getElementById(parseInt(i+1)+'_'+parseInt(j)).onclick=function(){
+                    move(pawn,[i+1,j])
+                    clearMovesColor()
+                }
+
             
                 
 
@@ -216,6 +260,13 @@ function showMoves(element) {
                 if (gameState[i+1][j+1] == ''){
                     //css
                     document.getElementById(parseInt(i+1)+'_'+parseInt(j+1)).className = 'green'
+                    document.getElementById(parseInt(i+1)+'_'+parseInt(j+1)).onclick=function(){
+                        move(pawn,[i+1,j+1])
+                        clearMovesColor()
+                    }
+    
+                    
+                    
 
                 }
 
@@ -225,6 +276,11 @@ function showMoves(element) {
                 if (gameState[i+1][j-1] == ''){
                     //css
                     document.getElementById(parseInt(i+1)+'_'+parseInt(j-1)).className = 'green'
+                    document.getElementById(parseInt(i+1)+'_'+parseInt(j-1)).onclick=function(){
+                        move(pawn,[i+1,j-1])
+                        clearMovesColor()
+                    }
+    
                 }
 
             }
@@ -235,12 +291,22 @@ function showMoves(element) {
             if (gameState[i-1][j] == ''){
                 //css
                 document.getElementById(parseInt(i-1)+'_'+parseInt(j)).className = 'green'
+                document.getElementById(parseInt(i-1)+'_'+parseInt(j)).onclick=function(){
+                    move(pawn,[i-1,j])
+                    clearMovesColor()
+                }
+
             }
 
             if (j+1<table_size){
                 if (gameState[i-1][j+1] == ''){
                     //css
                     document.getElementById(parseInt(i-1)+'_'+parseInt(j+1)).className = 'green'
+                    document.getElementById(parseInt(i-1)+'_'+parseInt(j+1)).onclick=function(){
+                        move(pawn,[i-1,j+1])
+                        clearMovesColor()
+                    }
+    
                 }
 
             }
@@ -249,6 +315,11 @@ function showMoves(element) {
                 if (gameState[i-1][j-1] == ''){
                     //css
                     document.getElementById(parseInt(i-1)+'_'+parseInt(j-1)).className = 'green'
+                    document.getElementById(parseInt(i-1)+'_'+parseInt(j-1)).onclick=function(){
+                        move(pawn,[i-1,j-1])
+                        clearMovesColor()
+                    }
+    
                 }
                 
 
@@ -259,6 +330,11 @@ function showMoves(element) {
     if (j-1>-1){
         if(gameState[i][j-1]==''){
             document.getElementById(parseInt(i)+'_'+parseInt(j-1)).className = 'green'
+            document.getElementById(parseInt(i)+'_'+parseInt(j-1)).onclick=function(){
+                move(pawn,[i,j-1])
+                clearMovesColor()
+            }
+
 
 
         }
@@ -267,6 +343,11 @@ function showMoves(element) {
     if (j+1<table_size){
         if(gameState[i][j+1]==''){
             document.getElementById(parseInt(i)+'_'+parseInt(j+1)).className = 'green'
+            document.getElementById(parseInt(i)+'_'+parseInt(j+1)).onclick=function(){
+                move(pawn,[i,j+1])
+                clearMovesColor()
+            }
+
 
 
         }
@@ -276,6 +357,11 @@ function showMoves(element) {
         if (j-1>-1){
             if(gameState[i][j-1]==''){
                 document.getElementById(parseInt(i)+'_'+parseInt(j-1)).className = 'green'
+                document.getElementById(parseInt(i)+'_'+parseInt(j-1)).onclick=function(){
+                    move(pawn,[i,j-1])
+                    clearMovesColor()
+                }
+
     
     
             }
@@ -284,6 +370,11 @@ function showMoves(element) {
         if (j+1<table_size){
             if(gameState[i][j+1]==''){
                 document.getElementById(parseInt(i)+'_'+parseInt(j+1)).className = 'green'
+                document.getElementById(parseInt(i)+'_'+parseInt(j+1)).onclick=function(){
+                    move(pawn,[i,j+1])
+                    clearMovesColor()
+                }
+
     
     
             }
@@ -291,10 +382,25 @@ function showMoves(element) {
 
     }
 
-   
 
 }
 
+
+function move(pawn,des_pos){
+    let pos = pawn.pos
+    document.getElementById(pos[0] + '_' + pos[1]).innerText =''
+    pawn.pos = des_pos
+    document.getElementById(des_pos[0] + '_' + des_pos[1]).innerText = pawn.name
+    document.getElementById(pos[0] + '_' + pos[1]).onclick = null
+    document.getElementById(des_pos[0] + '_' + des_pos[1]).onclick = function () {
+        clearMovesColor()
+        showMoves(this)
+    }
+
+
+    
+    
+}
 
 
 
