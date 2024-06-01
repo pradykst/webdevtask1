@@ -9,7 +9,7 @@ for (var i = 0; i < table_size; i++) {
 
 
 
-let currentPlayer = 0
+let currentPlayer = 1
 let currentPawn = null
 let movePos = null
 let canon_1=null
@@ -24,6 +24,7 @@ function startgame() {
 
 
     //grid of 8*8
+    document.getElementById('currentPlayer').innerText=`next turn is player ${((currentPlayer)%2)+1}'s `
 
     createboard(table_size)
 
@@ -201,6 +202,8 @@ class Canon extends Pawn {
                 counter++
 
             }
+            this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
+
             
         }
 
@@ -213,6 +216,7 @@ class Canon extends Pawn {
                     this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
                     counter ++
             }
+            this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
         }
     }
 }
@@ -287,6 +291,10 @@ class Bullet extends Pawn {
             console.log('bullet hit  ')
             obj.identify()
             bullet_hit=true
+
+            if(obj  instanceof Titan ){
+                console.log(`player ${((currentPlayer-1)%2)+1} wins`)
+            }
             //@todo:bullet physics
             
         
@@ -511,8 +519,21 @@ function move(pawn, des_pos) {
     }
 
     //shoot bullet
-    canon_1.shoot()
+
+    if (currentPlayer%2!=0){
+        canon_1.shoot()
+    
+    }
+    else{
+        canon_2.shoot()
+        
+    }
+    currentPlayer++
+    document.getElementById('currentPlayer').innerText=`next turn is player ${((currentPlayer)%2)+1}'s `
+
+    
+
 
     
 }
-
+    
