@@ -14,6 +14,7 @@ let currentPawn = null
 let movePos = null
 let canon_1=null
 let canon_2=null
+let bullet_hit=false
 
 
 function startgame() {
@@ -270,6 +271,7 @@ class Bullet extends Pawn {
 
     show(pos) {
 
+        if (!bullet_hit){
         //@TODO:  if bullet is in last box or has hit something
         //@todo:remove bullet
         //@todo:change player
@@ -284,17 +286,27 @@ class Bullet extends Pawn {
             let obj = gameState[pos[0]][pos[1]]
             console.log('bullet hit  ')
             obj.identify()
+            bullet_hit=true
             //@todo:bullet physics
+            
         
         }
+
+    }
 
 
     }
 
 
     hide(pos) {
+
+        if (!bullet_hit){
+
+        
         console.log("hiding at pos..",pos)
         document.getElementById(pos[0] + '_' + pos[1]).innerText = ''
+
+        }
     }
 
 
