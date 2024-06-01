@@ -190,6 +190,9 @@ class Canon extends Pawn {
 
     }
     shoot() {
+        console.log('shooting from pos ', this.pos)
+        console.log('bullet pos is ', this.bullet.pos)
+
         if (this.pos[0] == table_size-1) {
             //showbullet
             this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
@@ -208,6 +211,7 @@ class Canon extends Pawn {
         }
 
         else{
+            console.log('show bullet 1',this.bullet.pos)
             this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
             var counter = 1
             while(this.bullet.pos[0]<table_size-1){
@@ -217,8 +221,28 @@ class Canon extends Pawn {
                     counter ++
             }
             this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
+
+            
         }
+
+        
+
     }
+    resetBulletPos(){
+        bullet_hit=false
+        let bul_pos=[null,this.pos[1]]
+        if(this.pos[0]==0){
+            bul_pos[0]=parseInt(this.pos[0])+1
+
+        }
+        else{
+            bul_pos[0]=parseInt(this.pos[0])-1
+        }
+
+        this.bullet.pos = bul_pos
+
+    }
+
 }
 
 class Titan extends Pawn {
@@ -502,6 +526,10 @@ function showMoves(element) {
 
 function move(pawn, des_pos) {
     clearMovesColor()
+    canon_1.resetBulletPos()
+    canon_2.resetBulletPos()
+
+
     let pos = pawn.pos
     document.getElementById(pos[0] + '_' + pos[1]).innerText = ''
     pawn.pos = des_pos
@@ -515,6 +543,7 @@ function move(pawn, des_pos) {
             pawn.bullet.pos[0]=parseInt(pawn.pos[0])-1
             pawn.bullet.pos[1]=pawn.pos[1]
         }
+
 
     }
     document.getElementById(des_pos[0] + '_' + des_pos[1]).innerText = pawn.name
