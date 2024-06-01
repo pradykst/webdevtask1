@@ -505,6 +505,18 @@ function move(pawn, des_pos) {
     let pos = pawn.pos
     document.getElementById(pos[0] + '_' + pos[1]).innerText = ''
     pawn.pos = des_pos
+    if (pawn instanceof Canon){
+        if(pawn.pos[0]==0){
+            pawn.bullet.pos[0]=parseInt(pawn.pos[0])+1
+            pawn.bullet.pos[1]=pawn.pos[1]
+
+        }
+        else{
+            pawn.bullet.pos[0]=parseInt(pawn.pos[0])-1
+            pawn.bullet.pos[1]=pawn.pos[1]
+        }
+
+    }
     document.getElementById(des_pos[0] + '_' + des_pos[1]).innerText = pawn.name
     document.getElementById(pos[0] + '_' + pos[1]).onclick = null
     gameState[pos[0]][pos[1]] = ''
@@ -517,6 +529,8 @@ function move(pawn, des_pos) {
         //@todo: single method for  onclick in this and pawn class
 
     }
+
+    
 
     //shoot bullet
 
@@ -536,4 +550,4 @@ function move(pawn, des_pos) {
 
     
 }
-    
+
