@@ -87,7 +87,7 @@ function reset(){
 }
 
 function changePlayer(){
-    currentPlayer++
+    //currentPlayer++
     clearInterval(gameTimerID)
     timeElapsed=-1
     gameTimerID=setInterval(countfxn,1000)
