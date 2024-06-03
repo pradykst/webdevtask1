@@ -7,7 +7,7 @@ td {
     border: 1px solid black;
     padding: 8px;
     width: 12.5%; /* 100% / 8 columns = 12.5% */
-    height: 80px; /* fixed height */
+    height: 60px; /* fixed height */
     text-align: center;
     text-wrap:wrap;
 }
