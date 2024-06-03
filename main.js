@@ -15,10 +15,50 @@ let movePos = null
 let canon_1=null
 let canon_2=null
 let bullet_hit=false
+let rotate=false //false is right and true is left absoulte from the board
+let ricochet=false
+
+
+const startingTime=2
+let time = startingTime*60
+
+
+
+
+function countfxn(){
+    console.log('time')
+    const min=Math.floor(time/60)
+    let sec=time%60
+    sec=sec<10?'0'+sec:sec
+
+    const countdownEl=document.getElementById('countdown')
+
+    countdownEl.innerText=`${min}:${sec}`
+    time--
+
+}
+
+
+function rotateLeft(){
+    rotate=true
+    clearMovesColor()
+
+
+}
+
+function rotateRight(){
+    rotate=false
+    clearMovesColor()
+    
+}
+
+document.getElementById('b')
+
 
 
 function startgame() {
     //alert("game is starting")
+
     document.getElementById('startgameButton').setAttribute('hidden', 'hidden')
 
 
@@ -27,6 +67,10 @@ function startgame() {
     document.getElementById('currentPlayer').innerText=`next turn is player ${((currentPlayer)%2)+1}'s `
 
     createboard(table_size)
+    setInterval(countfxn,1000)
+
+
+    
 
 
     //5 pawns with different properties
@@ -145,11 +189,13 @@ class Pawn {
             gameState[pos[0]][pos[1]] = this
             document.getElementById(pos[0] + '_' + pos[1]).innerText = name
         }
-            
+        
         document.getElementById(pos[0] + '_' + pos[1]).onclick = function () {
             //@todo: make only currentPlayers pawn clickable
             clearMovesColor()
             showMoves(this)
+                  
+
         }
 
 
@@ -170,6 +216,9 @@ class Pawn {
 
 
 }
+
+//@todo: bullet to move up and down after hitting ricochets
+
 
 class Canon extends Pawn {
     bullet
@@ -193,39 +242,43 @@ class Canon extends Pawn {
         console.log('shooting from pos ', this.pos)
         console.log('bullet pos is ', this.bullet.pos)
 
-        if (this.pos[0] == table_size-1) {
-            //showbullet
-            this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
-            var counter=1
-
-            while(this.bullet.pos[0]>0){
-                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
-                this.bullet.pos[0] = parseInt(this.bullet.pos[0])-1
-                this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
-                counter++
-
-            }
-            this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
-
-            
-        }
-
-        else{
-            console.log('show bullet 1',this.bullet.pos)
-            this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
-            var counter = 1
-            while(this.bullet.pos[0]<table_size-1){
-                    this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
-                    this.bullet.pos[0] = parseInt(this.bullet.pos[0])+1
+        if (!ricochet){
+            if (this.pos[0] == table_size-1) {
+                //showbullet
+                this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
+                var counter=1
+    
+                while(this.bullet.pos[0]>0){
+                    this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
+                    this.bullet.pos[0] = parseInt(this.bullet.pos[0])-1
                     this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
-                    counter ++
+                    counter++
+    
+                }
+                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
+    
+                
             }
-            this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
-
+    
+            else{
+                console.log('show bullet 1',this.bullet.pos)
+                this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
+                var counter = 1
+                while(this.bullet.pos[0]<table_size-1){
+                        this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
+                        this.bullet.pos[0] = parseInt(this.bullet.pos[0])+1
+                        this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
+                        counter ++
+                }
+                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
+    
+                
+            }
+    
             
         }
 
-        
+
 
     }
     resetBulletPos(){
@@ -268,6 +321,17 @@ class Ricochets extends Pawn {
     }
     rotate() {
         console.log('rotate')
+        if (rotate){
+            //j--
+            console.log('bullet to move left')
+
+        }
+        else{
+            console.log('bullet to move right')
+            //j++
+        }
+        
+
 
     }
 }
@@ -280,6 +344,17 @@ class Semiricochets extends Pawn {
 
     rotate() {
         console.log('ricochets from semi')
+        if (rotate){
+            console.log('bullet to move left')
+            
+            //j--
+            
+        }
+        else{
+            console.log('bullet to move right')
+            //j++
+        }
+        
     }
 
 }
@@ -315,11 +390,19 @@ class Bullet extends Pawn {
             console.log('bullet hit  ')
             obj.identify()
             bullet_hit=true
+            
 
             if(obj  instanceof Titan ){
+                console.log(obj)
                 console.log(`player ${((currentPlayer-1)%2)+1} wins`)
             }
             //@todo:bullet physics
+
+            if (obj instanceof Ricochets || obj instanceof Semiricochets){
+                ricochet=true
+                obj.rotate()
+
+            }
             
         
         }
@@ -371,6 +454,19 @@ function showMoves(element) {
     var pos = element.id.split('_')
     var pawn = gameState[pos[0]][pos[1]]
     pawn.identify()
+
+    if( pawn instanceof Ricochets){
+        document.getElementById('rotate_left').style.display = 'block'
+        document.getElementById('rotate_right').style.display = 'block'
+
+    }
+    if( pawn  instanceof Semiricochets){
+        document.getElementById('rotate_left').style.display = 'block'
+        document.getElementById('rotate_right').style.display = 'block'
+
+
+    }
+
     let isCanon = false
     if (pawn instanceof Canon) {
         isCanon = true
