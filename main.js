@@ -259,7 +259,7 @@ class Pawn {
         document.getElementById(pos[0] + '_' + pos[1]).onclick = function () {
 
             //@todo: make only currentPlayers pawn clickable
-            if(!pause){
+            if(!pause && name.slice(-1)!=((currentPlayer)%2)+1){
                 clearMovesColor()
                 showMoves(this)
             }
@@ -791,7 +791,7 @@ function move(pawn, des_pos) {
     gameState[des_pos[0]][des_pos[1]] = pawn
     console.log(des_pos)
     document.getElementById(des_pos[0] + '_' + des_pos[1]).onclick = function () {
-        if(!pause){
+        if(!pause && pawn.name.slice(-1)!=((currentPlayer)%2)+1){
             clearMovesColor()
             showMoves(this)
         }
