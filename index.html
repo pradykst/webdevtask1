@@ -12,12 +12,15 @@
 <body>
 
     <button id='startgameButton' type="button" onclick="startgame()">Start Game!</button>
+    <button id="reset" type="button" onclick="reset()" style="display: none;">Reset</button>
     <div id="currentPlayer"></div>
     <table id="gameboard"></table>
     <button id="rotate_left" type="button" onclick='rotateLeft()' style="display: none;" >Left</button>
     <button id="rotate_right" type="button" onclick='rotateRight()' style="display: none;" >Right</button>
-    <p id="countdown">02:00</p>
-
+    <p id="countdown">120 seconds</p>
+    <button id="pause" type="button" onclick="pauseTime()" style="display: none;" >Pause</button>
+    <button id="resume" type="button" onclick="resume()" style="display: none;">Resume</button>
+    
 
 </body>
 

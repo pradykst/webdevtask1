@@ -17,31 +17,58 @@ let canon_2=null
 let bullet_hit=false
 let rotate=false //false is right and true is left absoulte from the board
 let ricochet=false
+let timerIds={'canon':[],'ricc':[]}
+let gameTimerID=null
+let pause=false
+const playerDuration=120//seconds
+let timeElapsed =-1
 
 
-const startingTime=2
-let time = startingTime*60
+function clearTimers(name){
+    timerIds[name].forEach(element => {
+        clearTimeout(element)
+        
+    });
+
+}
 
 
 
 
 function countfxn(){
     console.log('time')
-    const min=Math.floor(time/60)
-    let sec=time%60
-    sec=sec<10?'0'+sec:sec
 
     const countdownEl=document.getElementById('countdown')
+    if(timeElapsed==-1){
+        timeElapsed=playerDuration
 
-    countdownEl.innerText=`${min}:${sec}`
-    time--
+    }
+    //@TODO:can show time in minutes and seconds
+    countdownEl.innerText=`${timeElapsed} seconds`
+    timeElapsed--
+    if (timeElapsed<=0){
+        console.log(`player ${((currentPlayer)%2)+1} wins`)
+        alert(`TIMEOVER player ${((currentPlayer)%2)+1} wins `)
+        reset()
+    }
 
 }
 
+function pauseTime(){
+    clearInterval(gameTimerID)
+    pause=true
+}
+
+function resume(){
+    gameTimerID=setInterval(countfxn,1000)
+    pause=false
+}
 
 function rotateLeft(){
     rotate=true
     clearMovesColor()
+    document.getElementById('rotate_left').style.display = 'none'
+    document.getElementById('rotate_right').style.display = 'none'
 
 
 }
@@ -49,25 +76,59 @@ function rotateLeft(){
 function rotateRight(){
     rotate=false
     clearMovesColor()
+    document.getElementById('rotate_left').style.display = 'none'
+    document.getElementById('rotate_right').style.display = 'none'
     
 }
 
-document.getElementById('b')
+function reset(){
+    startgame()
+
+}
+
+function changePlayer(){
+    currentPlayer++
+    clearInterval(gameTimerID)
+    timeElapsed=-1
+    gameTimerID=setInterval(countfxn,1000)
+}
 
 
 
 function startgame() {
     //alert("game is starting")
+    document.getElementById('gameboard').innerHTML=null
+    currentPlayer = 1
+    currentPawn = null
+    movePos = null
+    canon_1=null
+    canon_2=null
+    bullet_hit=false
+    rotate=false //false is right and true is left absoulte from the board
+    ricochet=false 
+    gameTimerID=null
+    pause=false
+    timeElapsed =-1
+    clearTimers('canon')
+    clearTimers('ricc')
+    timerIds={'canon':[],'ricc':[]}
+    
+
 
     document.getElementById('startgameButton').setAttribute('hidden', 'hidden')
+    document.getElementById('reset').style.display = 'block'
+    document.getElementById('pause').style.display = 'block'
+    document.getElementById('resume').style.display = 'block'
+    
 
 
 
     //grid of 8*8
-    document.getElementById('currentPlayer').innerText=`next turn is player ${((currentPlayer)%2)+1}'s `
+    document.getElementById('currentPlayer').innerText=`NEXT IS player ${((currentPlayer+2)%2)+1}'s TURN `
 
     createboard(table_size)
-    setInterval(countfxn,1000)
+    gameTimerID=setInterval(countfxn,1000)
+
 
 
     
@@ -191,9 +252,12 @@ class Pawn {
         }
         
         document.getElementById(pos[0] + '_' + pos[1]).onclick = function () {
+
             //@todo: make only currentPlayers pawn clickable
-            clearMovesColor()
-            showMoves(this)
+            if(!pause){
+                clearMovesColor()
+                showMoves(this)
+            }
                   
 
         }
@@ -242,42 +306,50 @@ class Canon extends Pawn {
         console.log('shooting from pos ', this.pos)
         console.log('bullet pos is ', this.bullet.pos)
 
-        if (!ricochet){
-            if (this.pos[0] == table_size-1) {
-                //showbullet
-                this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
-                var counter=1
-    
-                while(this.bullet.pos[0]>0){
-                    this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
-                    this.bullet.pos[0] = parseInt(this.bullet.pos[0])-1
-                    this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
-                    counter++
-    
-                }
-                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
-    
-                
+        
+        if (this.pos[0] == table_size-1) {
+            //showbullet
+            this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
+            var counter=1
+
+            while(this.bullet.pos[0]>0){
+                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 ,'canon' )
+                this.bullet.pos[0] = parseInt(this.bullet.pos[0])-1
+                this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500,'canon')
+                counter++
+
             }
-    
-            else{
-                console.log('show bullet 1',this.bullet.pos)
-                this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
-                var counter = 1
-                while(this.bullet.pos[0]<table_size-1){
-                        this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
-                        this.bullet.pos[0] = parseInt(this.bullet.pos[0])+1
-                        this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500)
-                        counter ++
-                }
-                this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500 )
-    
-                
-            }
-    
+            this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500,'canon' )
+ 
+
+
+
             
         }
 
+        else{
+            console.log('show bullet 1',this.bullet.pos)
+            this.bullet.show([this.bullet.pos[0],this.bullet.pos[1]])
+            var counter = 1
+            while(this.bullet.pos[0]<table_size-1){
+                    this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500,'canon')
+                    this.bullet.pos[0] = parseInt(this.bullet.pos[0])+1
+                    this.bullet.delayedShow([this.bullet.pos[0],this.bullet.pos[1]], counter * 500,'canon')
+                    counter ++
+            }
+            this.bullet.delayedHide([this.bullet.pos[0],this.bullet.pos[1]], counter * 500,'canon' )
+
+
+            
+        }
+    
+            
+        
+        
+        
+        
+
+    
 
 
     }
@@ -315,6 +387,7 @@ class Tank extends Pawn {
 }
 
 class Ricochets extends Pawn {
+    
     constructor(i, pos) {
         super('Ricochets' + '_' + i, pos)
 
@@ -331,45 +404,102 @@ class Ricochets extends Pawn {
             //j++
         }
         
+        
+        
 
 
     }
-}
 
-class Semiricochets extends Pawn {
-    constructor(i, pos) {
-        super('Semiricochets' + '_' + i, pos)
+    reflect(){
+        console.log('reflect' , this.pos)
+        var canon=null
 
-    }
 
-    rotate() {
-        console.log('ricochets from semi')
-        if (rotate){
-            console.log('bullet to move left')
-            
-            //j--
-            
+        if (((currentPlayer+2)%2)==0){
+            canon=canon_1
         }
         else{
-            console.log('bullet to move right')
-            //j++
+            canon=canon_2
+        }
+
+        
+        if (rotate){
+            canon.bullet.pos[0]=this.pos[0]
+            canon.bullet.pos[1]=this.pos[1]-1
+
+        }
+        else {
+            canon.bullet.pos[0]=this.pos[0]
+            canon.bullet.pos[1]=this.pos[1]+1
+
         }
         
+    
+        
+        if (rotate) {
+            //showbullet
+            canon.bullet.show([canon.bullet.pos[0],canon.bullet.pos[1]])
+            var counter=1
+
+            while(canon.bullet.pos[1]>0){
+                canon.bullet.delayedHide([canon.bullet.pos[0],canon.bullet.pos[1]], counter * 500,'ricc' )
+                canon.bullet.pos[1] = parseInt(canon.bullet.pos[1])-1
+                canon.bullet.delayedShow([canon.bullet.pos[0],canon.bullet.pos[1]], counter * 500,'ricc')
+                counter++
+
+            }
+            canon.bullet.delayedHide([canon.bullet.pos[0],canon.bullet.pos[1]], counter * 500,'ricc' )
+
+
+            
+        }
+
+        else{
+            console.log('show bullet 1',canon.bullet.pos)
+            canon.bullet.show([canon.bullet.pos[0],canon.bullet.pos[1]])
+            var counter = 1
+            while(canon.bullet.pos[1]<table_size-1){
+                    canon.bullet.delayedHide([canon.bullet.pos[0],canon.bullet.pos[1]], counter * 500,'ricc')
+                    canon.bullet.pos[1] = parseInt(canon.bullet.pos[1])+1
+                    canon.bullet.delayedShow([canon.bullet.pos[0],canon.bullet.pos[1]], counter * 500,'ricc')
+                    counter ++
+            }
+            canon.bullet.delayedHide([canon.bullet.pos[0],canon.bullet.pos[1]], counter * 500 ,'ricc')
+
+
+            
+        }
+
+
+
+        
+
+    }
+}
+
+class Semiricochets extends Ricochets {
+    constructor(i, pos){
+        super('Semi' + '_' + i, pos)
     }
 
+    
 }
+
+
 
 class Bullet extends Pawn {
     constructor(pos) {
         super('Bullet', pos)
     }
 
-    delayedHide(pos, timeout){
-        setTimeout(this.hide,timeout,pos)
+    delayedHide(pos, timeout,name){
+        var timerid=setTimeout(this.hide,timeout,pos)
+        timerIds[name].push(timerid)
     }
 
-    delayedShow(pos, timeout){
-        setTimeout(this.show,timeout,pos)
+    delayedShow(pos, timeout,name){
+        var timerid=setTimeout(this.show,timeout,pos)
+        timerIds[name].push(timerid)
     }
 
     show(pos) {
@@ -389,18 +519,28 @@ class Bullet extends Pawn {
             let obj = gameState[pos[0]][pos[1]]
             console.log('bullet hit  ')
             obj.identify()
-            bullet_hit=true
+
+            if (!(obj  instanceof Ricochets)){
+                bullet_hit=true
+
+            }
+            
             
 
             if(obj  instanceof Titan ){
                 console.log(obj)
                 console.log(`player ${((currentPlayer-1)%2)+1} wins`)
+                alert(`player ${((currentPlayer)%2)+1} wins`)
+                reset()
             }
             //@todo:bullet physics
 
             if (obj instanceof Ricochets || obj instanceof Semiricochets){
                 ricochet=true
-                obj.rotate()
+                clearTimers('canon')
+                obj.reflect()
+                
+                
 
             }
             
@@ -421,6 +561,9 @@ class Bullet extends Pawn {
         console.log("hiding at pos..",pos)
         document.getElementById(pos[0] + '_' + pos[1]).innerText = ''
 
+        }
+        if(bullet_hit || (pos[0]<=0 || pos[0]>=table_size-1) || (pos[1]<=0 || pos[1]>=table_size-1)){
+            changePlayer()
         }
     }
 
@@ -460,12 +603,7 @@ function showMoves(element) {
         document.getElementById('rotate_right').style.display = 'block'
 
     }
-    if( pawn  instanceof Semiricochets){
-        document.getElementById('rotate_left').style.display = 'block'
-        document.getElementById('rotate_right').style.display = 'block'
 
-
-    }
 
     let isCanon = false
     if (pawn instanceof Canon) {
@@ -648,8 +786,10 @@ function move(pawn, des_pos) {
     gameState[des_pos[0]][des_pos[1]] = pawn
     console.log(des_pos)
     document.getElementById(des_pos[0] + '_' + des_pos[1]).onclick = function () {
-        clearMovesColor()
-        showMoves(this)
+        if(!pause){
+            clearMovesColor()
+            showMoves(this)
+        }
 
         //@todo: single method for  onclick in this and pawn class
 
@@ -659,7 +799,7 @@ function move(pawn, des_pos) {
 
     //shoot bullet
 
-    if (currentPlayer%2!=0){
+    if ((currentPlayer)%2!=0){
         canon_1.shoot()
     
     }
@@ -668,7 +808,7 @@ function move(pawn, des_pos) {
         
     }
     currentPlayer++
-    document.getElementById('currentPlayer').innerText=`next turn is player ${((currentPlayer)%2)+1}'s `
+    document.getElementById('currentPlayer').innerText=`NEXT IS player ${((currentPlayer+2)%2)+1}'s TURN `
 
     
 
