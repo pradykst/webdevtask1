@@ -222,6 +222,11 @@ function clearMovesColor() {
 
         }
     }
+
+    document.getElementById('rotate_left').style.display = 'none'
+    document.getElementById('rotate_right').style.display = 'none'
+
+
 }
 function createboard(table_size) {
     var board = document.getElementById("gameboard");
